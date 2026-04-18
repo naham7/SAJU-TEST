@@ -1,0 +1,1305 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>사주명리 — 나만의 운명 분석기</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;600;700&family=Noto+Sans+KR:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #1a1410;
+  --ink2: #3d3028;
+  --ink3: #7a6555;
+  --paper: #f5f0e8;
+  --paper2: #ede6d6;
+  --paper3: #e2d9c5;
+  --gold: #b8902a;
+  --gold2: #d4a83a;
+  --red: #8b2020;
+  --red2: #c0392b;
+  --blue-dark: #1a2d4a;
+  --jade: #2d5a4a;
+  --jade2: #3d7a62;
+  --border: rgba(26,20,16,0.15);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Noto Sans KR', sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* 배경 패턴 */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(26,20,16,0.04) 40px),
+    repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(26,20,16,0.04) 40px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.app-wrapper {
+  position: relative;
+  z-index: 1;
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 4rem;
+}
+
+/* 헤더 */
+.app-header {
+  text-align: center;
+  padding: 3rem 0 2.5rem;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 2.5rem;
+  position: relative;
+}
+.header-deco {
+  font-size: 11px;
+  letter-spacing: 0.4em;
+  color: var(--gold);
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+}
+.app-title {
+  font-family: 'Noto Serif KR', serif;
+  font-size: clamp(2rem, 5vw, 3.2rem);
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1.2;
+  margin-bottom: 0.6rem;
+}
+.app-title span { color: var(--gold); }
+.app-subtitle {
+  font-size: 13px;
+  color: var(--ink3);
+  letter-spacing: 0.05em;
+}
+.header-ornament {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+.ornament-line {
+  height: 1px;
+  width: 80px;
+  background: linear-gradient(90deg, transparent, var(--gold));
+}
+.ornament-line.r { background: linear-gradient(90deg, var(--gold), transparent); }
+.ornament-symbol {
+  font-family: 'Noto Serif KR', serif;
+  font-size: 18px;
+  color: var(--gold);
+}
+
+/* 탭 */
+.tabs {
+  display: flex;
+  gap: 0;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 2rem;
+  background: var(--paper2);
+}
+.tab-btn {
+  flex: 1;
+  padding: 12px;
+  border: none;
+  background: transparent;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink3);
+  cursor: pointer;
+  transition: all 0.2s;
+  border-right: 1px solid var(--border);
+  letter-spacing: 0.03em;
+}
+.tab-btn:last-child { border-right: none; }
+.tab-btn.active {
+  background: var(--ink);
+  color: var(--paper);
+}
+.tab-btn:hover:not(.active) { background: var(--paper3); color: var(--ink); }
+
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+/* 섹션 카드 */
+.section-card {
+  background: var(--paper2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 1.8rem;
+  margin-bottom: 1.5rem;
+}
+.section-title {
+  font-family: 'Noto Serif KR', serif;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 1.2rem;
+  padding-bottom: 0.8rem;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.section-title .title-mark {
+  display: inline-block;
+  width: 4px;
+  height: 16px;
+  background: var(--gold);
+  border-radius: 2px;
+}
+
+/* 폼 그리드 */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.form-group.full { grid-column: 1 / -1; }
+.form-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ink2);
+  letter-spacing: 0.05em;
+}
+.form-input, .form-select {
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--paper);
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 14px;
+  color: var(--ink);
+  outline: none;
+  transition: border-color 0.2s;
+  width: 100%;
+  -webkit-appearance: none;
+  appearance: none;
+}
+.form-input:focus, .form-select:focus { border-color: var(--gold); }
+.select-wrap { position: relative; }
+.select-wrap::after {
+  content: '▾';
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--ink3);
+  font-size: 12px;
+  pointer-events: none;
+}
+
+/* 제출 버튼 */
+.submit-btn {
+  width: 100%;
+  padding: 14px;
+  background: var(--ink);
+  color: var(--paper);
+  border: none;
+  border-radius: 4px;
+  font-family: 'Noto Serif KR', serif;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  letter-spacing: 0.1em;
+  transition: all 0.2s;
+  margin-top: 0.5rem;
+  position: relative;
+  overflow: hidden;
+}
+.submit-btn:hover { background: var(--ink2); }
+.submit-btn:active { transform: scale(0.99); }
+.submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* 사주 원국 */
+.saju-pillars {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+}
+.pillar {
+  background: var(--paper);
+  padding: 1.2rem 0.8rem;
+  text-align: center;
+}
+.pillar-label {
+  font-size: 11px;
+  color: var(--ink3);
+  letter-spacing: 0.1em;
+  margin-bottom: 10px;
+}
+.pillar-char {
+  font-family: 'Noto Serif KR', serif;
+  font-size: 28px;
+  font-weight: 700;
+  display: block;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+.pillar-char.gan { color: var(--ink); }
+.pillar-char.ji { color: var(--red); }
+.pillar-sub {
+  font-size: 11px;
+  color: var(--ink3);
+  margin-top: 6px;
+}
+
+/* 오행 분석 */
+.ohaeng-grid {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+.ohaeng-item {
+  flex: 1;
+  min-width: 90px;
+  padding: 12px 8px;
+  border-radius: 4px;
+  text-align: center;
+  border: 1px solid transparent;
+}
+.ohaeng-name {
+  font-family: 'Noto Serif KR', serif;
+  font-size: 18px;
+  font-weight: 700;
+  display: block;
+  margin-bottom: 4px;
+}
+.ohaeng-count {
+  font-size: 12px;
+  margin-bottom: 6px;
+}
+.ohaeng-bar-wrap {
+  height: 3px;
+  background: rgba(0,0,0,0.1);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.ohaeng-bar { height: 3px; border-radius: 2px; transition: width 1s ease; }
+
+/* 십성 배지 */
+.sipseong-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-bottom: 1.5rem;
+}
+.sipseong-item {
+  background: var(--paper);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 10px 8px;
+  text-align: center;
+}
+.sipseong-position { font-size: 11px; color: var(--ink3); margin-bottom: 4px; }
+.sipseong-name {
+  font-family: 'Noto Serif KR', serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+/* 운세 결과 */
+.result-section {
+  border-left: 3px solid var(--gold);
+  padding-left: 1.2rem;
+  margin-bottom: 1.8rem;
+}
+.result-section h3 {
+  font-family: 'Noto Serif KR', serif;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 0.8rem;
+}
+.result-text {
+  font-size: 14px;
+  color: var(--ink2);
+  line-height: 1.9;
+}
+.result-text strong { color: var(--gold); font-weight: 600; }
+.result-highlight {
+  background: var(--paper3);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 1rem 1.2rem;
+  font-size: 13px;
+  color: var(--ink2);
+  line-height: 1.8;
+  margin-top: 1rem;
+}
+
+/* 행운 숫자/색/방향 */
+.lucky-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-top: 1rem;
+}
+.lucky-item {
+  background: var(--paper);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 1rem;
+  text-align: center;
+}
+.lucky-label { font-size: 11px; color: var(--ink3); margin-bottom: 6px; letter-spacing: 0.05em; }
+.lucky-value {
+  font-family: 'Noto Serif KR', serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+/* 로또 번호 */
+.lotto-balls {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+.lotto-ball {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Noto Serif KR', serif;
+  font-size: 15px;
+  font-weight: 700;
+  border: 2px solid;
+  position: relative;
+}
+.lotto-ball.b1 { background: #f7f3e9; border-color: var(--gold); color: var(--gold); }
+.lotto-ball.b2 { background: #f9eaea; border-color: var(--red); color: var(--red); }
+.lotto-ball.b3 { background: #eaf0f5; border-color: var(--blue-dark); color: var(--blue-dark); }
+.lotto-ball.bonus { background: var(--ink); border-color: var(--ink); color: var(--paper); }
+
+.lotto-set {
+  background: var(--paper);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 1.2rem;
+  margin-bottom: 1rem;
+}
+.lotto-set-label {
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: var(--ink3);
+  margin-bottom: 10px;
+}
+.lotto-story {
+  font-size: 12px;
+  color: var(--ink3);
+  line-height: 1.7;
+  margin-top: 8px;
+  font-style: italic;
+}
+
+/* 이력 */
+.history-item {
+  background: var(--paper);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 1rem 1.2rem;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.history-name {
+  font-family: 'Noto Serif KR', serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+}
+.history-meta { font-size: 12px; color: var(--ink3); margin-top: 2px; }
+.history-pillars {
+  font-family: 'Noto Serif KR', serif;
+  font-size: 18px;
+  color: var(--ink);
+  letter-spacing: 0.1em;
+}
+.history-del {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  color: var(--ink3);
+  cursor: pointer;
+  padding: 4px 10px;
+  font-size: 12px;
+  font-family: 'Noto Sans KR', sans-serif;
+}
+.history-del:hover { background: var(--paper3); }
+
+/* 빈 상태 */
+.empty-state {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--ink3);
+  font-size: 13px;
+  line-height: 1.8;
+}
+.empty-symbol {
+  font-family: 'Noto Serif KR', serif;
+  font-size: 3rem;
+  display: block;
+  margin-bottom: 1rem;
+  opacity: 0.3;
+}
+
+/* 로딩 */
+.loading-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(245,240,232,0.85);
+  z-index: 100;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 1rem;
+}
+.loading-overlay.show { display: flex; }
+.loading-spinner {
+  font-family: 'Noto Serif KR', serif;
+  font-size: 3rem;
+  animation: spin 3s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-text {
+  font-family: 'Noto Serif KR', serif;
+  font-size: 15px;
+  color: var(--ink2);
+  letter-spacing: 0.1em;
+}
+
+/* 결과 애니메이션 */
+.result-reveal { animation: fadeUp 0.5s ease forwards; }
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* 스크롤바 */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--paper2); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+/* 반응형 */
+@media (max-width: 560px) {
+  .form-grid { grid-template-columns: 1fr; }
+  .saju-pillars { grid-template-columns: repeat(2, 1fr); }
+  .sipseong-grid { grid-template-columns: repeat(2, 1fr); }
+  .lucky-grid { grid-template-columns: 1fr 1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="loading-spinner">☯</div>
+  <div class="loading-text" id="loadingText">운명의 실을 풀고 있습니다...</div>
+</div>
+
+<div class="app-wrapper">
+  <header class="app-header">
+    <div class="header-deco">Personal Fortune Engine · 사주명리</div>
+    <h1 class="app-title">命理 <span>분석기</span></h1>
+    <p class="app-subtitle">사주 원국 · 십성 · 대운 · 로또 번호까지 — 나만의 운명 해석</p>
+    <div class="header-ornament">
+      <div class="ornament-line"></div>
+      <div class="ornament-symbol">卦</div>
+      <div class="ornament-line r"></div>
+    </div>
+  </header>
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('input')">사주 입력</button>
+    <button class="tab-btn" onclick="switchTab('result')" id="tabResult">원국 분석</button>
+    <button class="tab-btn" onclick="switchTab('lotto')" id="tabLotto">로또 번호</button>
+    <button class="tab-btn" onclick="switchTab('history')">분석 이력</button>
+  </div>
+
+  <!-- 입력 탭 -->
+  <div class="tab-panel active" id="panel-input">
+    <div class="section-card">
+      <div class="section-title"><span class="title-mark"></span> 기본 정보</div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">이름 (별칭)</label>
+          <input type="text" class="form-input" id="inp-name" placeholder="홍길동">
+        </div>
+        <div class="form-group">
+          <label class="form-label">성별</label>
+          <div class="select-wrap">
+            <select class="form-select" id="inp-gender">
+              <option value="M">남성 (男)</option>
+              <option value="F">여성 (女)</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">출생 연도</label>
+          <input type="number" class="form-input" id="inp-year" placeholder="1990" min="1900" max="2025">
+        </div>
+        <div class="form-group">
+          <label class="form-label">출생 월</label>
+          <div class="select-wrap">
+            <select class="form-select" id="inp-month">
+              <option value="1">1월</option><option value="2">2월</option>
+              <option value="3">3월</option><option value="4">4월</option>
+              <option value="5">5월</option><option value="6">6월</option>
+              <option value="7">7월</option><option value="8">8월</option>
+              <option value="9">9월</option><option value="10">10월</option>
+              <option value="11">11월</option><option value="12">12월</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">출생 일</label>
+          <div class="select-wrap">
+            <select class="form-select" id="inp-day">
+              <!-- JS로 채움 -->
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">출생 시간 (시주)</label>
+          <div class="select-wrap">
+            <select class="form-select" id="inp-hour">
+              <option value="0">자시 (子時) 23:30 ~ 01:30</option>
+              <option value="1">축시 (丑時) 01:30 ~ 03:30</option>
+              <option value="2">인시 (寅時) 03:30 ~ 05:30</option>
+              <option value="3">묘시 (卯時) 05:30 ~ 07:30</option>
+              <option value="4">진시 (辰時) 07:30 ~ 09:30</option>
+              <option value="5">사시 (巳時) 09:30 ~ 11:30</option>
+              <option value="6">오시 (午時) 11:30 ~ 13:30</option>
+              <option value="7">미시 (未時) 13:30 ~ 15:30</option>
+              <option value="8">신시 (申時) 15:30 ~ 17:30</option>
+              <option value="9">유시 (酉時) 17:30 ~ 19:30</option>
+              <option value="10">술시 (戌時) 19:30 ~ 21:30</option>
+              <option value="11">해시 (亥時) 21:30 ~ 23:30</option>
+              <option value="-1">모름 (시주 미입력)</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group full">
+          <label class="form-label">오늘의 감정 / 키워드 (로또 서사에 반영)</label>
+          <input type="text" class="form-input" id="inp-context" placeholder="예: 새 시작, 설레는 느낌, 변화를 원함...">
+        </div>
+      </div>
+      <button class="submit-btn" id="analyzeBtn" onclick="analyze()">
+        ✦ 사주 분석 시작
+      </button>
+    </div>
+
+    <div class="section-card">
+      <div class="section-title"><span class="title-mark"></span> 사용 방법</div>
+      <div style="font-size:13px; color:var(--ink2); line-height:1.9;">
+        <p style="margin-bottom:0.6rem">① 이름(별칭)과 생년월일, 태어난 시간을 입력하세요.</p>
+        <p style="margin-bottom:0.6rem">② <strong style="color:var(--gold)">사주 분석 시작</strong> 버튼을 누르면 원국·십성·오행·운세를 자동 계산합니다.</p>
+        <p style="margin-bottom:0.6rem">③ <strong style="color:var(--gold)">로또 번호</strong> 탭에서 사주 기반으로 생성된 번호 3세트를 확인하세요.</p>
+        <p style="margin-bottom:0.6rem">④ 분석 결과는 <strong style="color:var(--gold)">이력</strong> 탭에 자동 저장됩니다 (브라우저 로컬에만 저장).</p>
+        <p style="color:var(--ink3); font-size:12px; margin-top:1rem;">✦ 모든 데이터는 이 기기의 브라우저에만 저장되며, 외부로 전송되지 않습니다.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 원국 분석 탭 -->
+  <div class="tab-panel" id="panel-result">
+    <div id="resultContent">
+      <div class="empty-state">
+        <span class="empty-symbol">卦</span>
+        아직 분석된 사주가 없습니다.<br>
+        사주 입력 탭에서 정보를 입력하고<br>
+        분석을 시작해 주세요.
+      </div>
+    </div>
+  </div>
+
+  <!-- 로또 탭 -->
+  <div class="tab-panel" id="panel-lotto">
+    <div id="lottoContent">
+      <div class="empty-state">
+        <span class="empty-symbol">☯</span>
+        사주 분석 후 로또 번호가 생성됩니다.
+      </div>
+    </div>
+  </div>
+
+  <!-- 이력 탭 -->
+  <div class="tab-panel" id="panel-history">
+    <div class="section-card">
+      <div class="section-title"><span class="title-mark"></span> 분석 이력</div>
+      <div id="historyContent">
+        <div class="empty-state">
+          <span class="empty-symbol">册</span>
+          저장된 이력이 없습니다.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// 핵심 데이터: 천간·지지·십이지신·오행
+// ============================================================
+const CHEONGAN = ['甲','乙','丙','丁','戊','己','庚','辛','壬','癸'];
+const CHEONGAN_KO = ['갑','을','병','정','무','기','경','신','임','계'];
+const JIJI = ['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
+const JIJI_KO = ['자','축','인','묘','진','사','오','미','신','유','술','해'];
+const SIPIJINSU = ['쥐','소','호랑이','토끼','용','뱀','말','양','원숭이','닭','개','돼지'];
+
+const OHAENG = { // 오행 배속
+  gan: ['목','목','화','화','토','토','금','금','수','수'],
+  ji:  ['수','토','목','목','토','화','화','토','금','금','토','수']
+};
+const OHAENG_COLOR = {
+  목: { bg:'#e8f5e9', border:'#4caf50', text:'#2e7d32', bar:'#4caf50' },
+  화: { bg:'#fdecea', border:'#e53935', text:'#b71c1c', bar:'#e53935' },
+  토: { bg:'#fff8e1', border:'#f9a825', text:'#e65100', bar:'#f9a825' },
+  금: { bg:'#f5f5f5', border:'#90a4ae', text:'#37474f', bar:'#90a4ae' },
+  수: { bg:'#e3f2fd', border:'#1e88e5', text:'#0d47a1', bar:'#1e88e5' },
+};
+const OHAENG_MEANING = {
+  목: '성장·창조·인자함',
+  화: '열정·표현·예의',
+  토: '신뢰·중재·실용',
+  금: '의리·결단·청렴',
+  수: '지혜·적응·유연',
+};
+
+// ============================================================
+// 만세력 계산 엔진
+// ============================================================
+
+// 절기 기준 월주 계산용 (24절기 근사)
+const JEOLGI_MONTH = [
+  { month: 1,  day: 6  }, // 소한
+  { month: 2,  day: 4  }, // 입춘
+  { month: 3,  day: 6  }, // 경칩
+  { month: 4,  day: 5  }, // 청명
+  { month: 5,  day: 6  }, // 입하
+  { month: 6,  day: 6  }, // 망종
+  { month: 7,  day: 7  }, // 소서
+  { month: 8,  day: 7  }, // 입추
+  { month: 9,  day: 8  }, // 백로
+  { month: 10, day: 8  }, // 한로
+  { month: 11, day: 7  }, // 입동
+  { month: 12, day: 7  }, // 대설
+];
+
+function getSexagenary(index) {
+  return {
+    gan: CHEONGAN[index % 10],
+    ji:  JIJI[index % 12],
+    ganKo: CHEONGAN_KO[index % 10],
+    jiKo: JIJI_KO[index % 12],
+    ganIdx: index % 10,
+    jiIdx: index % 12,
+  };
+}
+
+function calcYearPillar(year) {
+  // 갑자년(1984)을 기준점으로 계산
+  const base = 1984; // 갑자년
+  let idx = (year - base) % 60;
+  if (idx < 0) idx += 60;
+  return getSexagenary(idx);
+}
+
+function calcMonthPillar(year, month, day) {
+  // 절기 기준 월 조정
+  const jeolgi = JEOLGI_MONTH[month - 1];
+  let adjMonth = month;
+  if (day < jeolgi.day) adjMonth--;
+  if (adjMonth < 1) adjMonth = 12;
+
+  // 연주 천간으로 월주 천간 계산
+  const yearGanIdx = calcYearPillar(year).ganIdx;
+  const baseGan = [2, 4, 6, 8, 0, 2, 4, 6, 8, 0]; // 연간별 1월 천간 인덱스
+  const monthGanStart = baseGan[yearGanIdx];
+  const ganIdx = (monthGanStart + adjMonth - 1) % 10;
+  const jiIdx = (adjMonth + 1) % 12; // 인월(寅)이 1월
+  return {
+    gan: CHEONGAN[ganIdx], ji: JIJI[jiIdx],
+    ganKo: CHEONGAN_KO[ganIdx], jiKo: JIJI_KO[jiIdx],
+    ganIdx, jiIdx,
+  };
+}
+
+function calcDayPillar(year, month, day) {
+  // 갑자일(1900-01-31) 기준 날짜 차이로 계산
+  const base = new Date(1900, 0, 31); // 갑자일
+  const target = new Date(year, month - 1, day);
+  const diff = Math.round((target - base) / (1000 * 60 * 60 * 24));
+  let idx = diff % 60;
+  if (idx < 0) idx += 60;
+  return getSexagenary(idx);
+}
+
+function calcHourPillar(dayGanIdx, hourIdx) {
+  if (hourIdx < 0) return null;
+  // 일간별 자시 천간: 갑기일→갑자, 을경일→병자, 병신일→무자, 정임일→경자, 무계일→임자
+  const hourGanBase = [0, 0, 2, 2, 4, 4, 6, 6, 8, 8]; // 일간 인덱스 기준
+  const baseGan = hourGanBase[dayGanIdx];
+  const ganIdx = (baseGan + hourIdx * 2) % 10;
+  const jiIdx = hourIdx;
+  return {
+    gan: CHEONGAN[ganIdx], ji: JIJI[jiIdx],
+    ganKo: CHEONGAN_KO[ganIdx], jiKo: JIJI_KO[jiIdx],
+    ganIdx, jiIdx,
+  };
+}
+
+// 십성 계산
+const SIPSEONG_TABLE = [
+  // 행 = 일간(0~9), 열 = 상대 천간(0~9)
+  // 비견/겁재, 식신/상관, 편재/정재, 편관/정관, 편인/정인
+  ['비견','겁재','식신','상관','편재','정재','편관','정관','편인','정인'],
+];
+function getSipseong(ilganIdx, targetGanIdx) {
+  const diff = ((targetGanIdx - ilganIdx) % 10 + 10) % 10;
+  const names = ['비견','겁재','식신','상관','편재','정재','편관','정관','편인','정인'];
+  return names[diff];
+}
+
+// 오행 집계
+function calcOhaeng(pillars) {
+  const count = { 목: 0, 화: 0, 토: 0, 금: 0, 수: 0 };
+  pillars.forEach(p => {
+    if (!p) return;
+    count[OHAENG.gan[p.ganIdx]]++;
+    count[OHAENG.ji[p.jiIdx]]++;
+  });
+  return count;
+}
+
+// ============================================================
+// 운세 해석 엔진 (내장 DB)
+// ============================================================
+
+const ILJU_MEANING = {
+  '甲子': { title:'갑자 — 지혜의 씨앗', personality:'뛰어난 지성과 창의성을 지닌 유형입니다. 새로운 아이디어를 끊임없이 생산하며 주변을 이끄는 힘이 있습니다.', strength:'창의성·지도력·직관', weakness:'고집·조급함', career:'기획·교육·IT·창업' },
+  '甲寅': { title:'갑인 — 곧은 소나무', personality:'원칙을 중시하며 강한 의지력을 지녔습니다. 한번 목표를 세우면 끝까지 밀고 나가는 추진력이 강점입니다.', strength:'추진력·정직·리더십', weakness:'융통성 부족', career:'법조·군인·경영·스포츠' },
+  '乙丑': { title:'을축 — 묵묵한 성실', personality:'근면 성실하며 차분한 성격입니다. 화려함보다 실속을 추구하며 신뢰를 쌓아가는 타입입니다.', strength:'성실·인내·꼼꼼함', weakness:'소극적 자기표현', career:'회계·연구·의료·농업' },
+  '乙卯': { title:'을묘 — 봄바람 같은 감성', personality:'예민한 감수성과 예술적 재능을 지녔습니다. 사람을 끌어당기는 매력이 있으며 협상력이 뛰어납니다.', strength:'감수성·친화력·예술성', weakness:'결단력 부족', career:'예술·디자인·마케팅·외교' },
+  '丙午': { title:'병오 — 정오의 태양', personality:'밝고 활달한 에너지로 주변을 환하게 만드는 유형입니다. 리더십이 자연스럽게 발휘됩니다.', strength:'카리스마·열정·사교성', weakness:'성급함·과도한 자신감', career:'방송·정치·세일즈·스타트업' },
+  '丁亥': { title:'정해 — 촛불과 바다', personality:'깊은 내면세계를 가진 감성파입니다. 직관력이 뛰어나며 인간 심리를 꿰뚫어 보는 능력이 있습니다.', strength:'직관·공감능력·철학성', weakness:'감정 기복', career:'상담·작가·철학·심리학' },
+  '戊辰': { title:'무진 — 큰 산의 믿음직함', personality:'믿음직하고 포용력이 큰 유형입니다. 조직의 중심이 되는 역할에 적합하며 위기에 강합니다.', strength:'신뢰성·포용력·안정감', weakness:'변화 적응 느림', career:'금융·부동산·공무원·경영' },
+  '己未': { title:'기미 — 따뜻한 흙', personality:'남을 돌보는 따뜻한 마음씨를 가진 유형입니다. 중재자 역할을 잘하며 조화를 중시합니다.', strength:'배려심·중재력·성실함', weakness:'우유부단', career:'복지·교육·HR·의료' },
+  '庚申': { title:'경신 — 서슬 퍼런 결단', personality:'원칙과 기준이 명확한 카리스마 있는 유형입니다. 결단력이 뛰어나며 목표를 달성하는 능력이 탁월합니다.', strength:'결단력·원칙주의·추진력', weakness:'타인 감정 배려 부족', career:'법조·군경·외과의·경영' },
+  '辛酉': { title:'신유 — 보석 같은 정밀함', personality:'완벽주의 성향이 강하며 섬세하고 날카로운 분석력을 지녔습니다. 예술적 안목도 뛰어납니다.', strength:'분석력·완벽주의·미적 감각', weakness:'비판적 시각', career:'회계·감사·예술·연구' },
+  '壬子': { title:'임자 — 깊은 강물', personality:'깊은 지혜와 적응력을 지닌 유형입니다. 어떤 상황에서도 유연하게 대처하며 숨은 재능이 많습니다.', strength:'적응력·지혜·창의성', weakness:'우유부단할 때 있음', career:'외교·무역·방송·IT' },
+  '癸亥': { title:'계해 — 겨울 바다의 깊이', personality:'심오한 통찰력과 철학적 사고를 지녔습니다. 표면보다 본질을 꿰뚫어 보는 탁월한 능력이 있습니다.', strength:'통찰력·철학·직관', weakness:'고독 성향', career:'연구·철학·작가·심리학' },
+};
+
+function getIljuMeaning(gan, ji) {
+  const key = gan + ji;
+  if (ILJU_MEANING[key]) return ILJU_MEANING[key];
+  // 기본값 (DB에 없는 일주)
+  const ganChar = CHEONGAN_KO[CHEONGAN.indexOf(gan)];
+  const jiChar = JIJI_KO[JIJI.indexOf(ji)];
+  const ohaeng = OHAENG.gan[CHEONGAN.indexOf(gan)];
+  return {
+    title: `${gan}${ji} — ${ganChar}${jiChar}일주`,
+    personality: `${ohaeng}의 기운을 중심으로 하는 일주입니다. 오행의 조화로 자신만의 독특한 매력과 재능을 가지고 있습니다.`,
+    strength: `${ohaeng} 오행의 장점 발휘`,
+    weakness: '균형 유지 필요',
+    career: '오행 기운에 맞는 분야',
+  };
+}
+
+function generateFortune(pillars, ohaengCount, gender) {
+  const dominant = Object.entries(ohaengCount).sort((a,b)=>b[1]-a[1])[0][0];
+  const weakest  = Object.entries(ohaengCount).sort((a,b)=>a[1]-b[1])[0][0];
+  const gStr = gender === 'M' ? '남성' : '여성';
+
+  const fortuneDB = {
+    목: {
+      love: `목(木)의 기운이 강한 ${gStr}은 감성이 풍부하고 직진형 연애를 합니다. 솔직한 표현으로 상대를 감동시키며, <strong>봄에 만남의 기회</strong>가 집중됩니다. 상생 상대는 수(水)의 기운을 가진 분입니다.`,
+      money: `초반엔 씀씀이가 헤픈 편이나 중후반에 재물이 모입니다. <strong>창업·기획 분야</strong>에서 수익 창출 가능성이 높습니다. 봄~여름이 재물 운의 피크 타이밍입니다.`,
+      career: `창의력이 강점입니다. <strong>IT·디자인·교육·창업</strong> 분야에서 두각을 나타냅니다. 팀보다는 자율성이 보장된 환경에서 능력을 발휘합니다.`,
+      health: `간·담낭 기능에 주의하세요. 스트레스 해소를 위한 <strong>야외 활동과 녹색 식품</strong>을 권장합니다.`,
+    },
+    화: {
+      love: `화(火)의 기운이 강한 ${gStr}은 열정적이고 표현력이 넘칩니다. 첫눈에 반하는 인연을 자주 만나며 <strong>여름에 로맨스</strong>가 활발합니다. 목(木) 기운의 상대와 좋은 궁합입니다.`,
+      money: `단기 수익에 강하나 충동소비 주의가 필요합니다. <strong>세일즈·방송·식음료</strong> 분야에서 높은 수익 가능성이 있습니다. 여름이 재물 운의 절정입니다.`,
+      career: `리더십과 표현력이 강점입니다. <strong>방송·마케팅·정치·서비스업</strong>에서 빠른 성장이 가능합니다. 무대에서 빛을 발하는 타입입니다.`,
+      health: `심장·혈압 관리에 유의하세요. <strong>명상, 충분한 수면</strong>으로 열기를 식히는 것이 중요합니다.`,
+    },
+    토: {
+      love: `토(土)의 기운이 강한 ${gStr}은 안정적이고 헌신적인 연애를 합니다. 신뢰가 쌓인 후 깊어지는 관계를 선호하며 <strong>긴 인연</strong>으로 이어지는 경우가 많습니다.`,
+      money: `꾸준한 재물 축적 능력을 지녔습니다. <strong>부동산·금융·요식업</strong>에서 안정적인 수익을 만들어냅니다. 환절기에 투자 기회가 옵니다.`,
+      career: `조직 내 신뢰받는 중심 역할에 적합합니다. <strong>공무원·금융·HR·교육</strong> 분야에서 장기적 성공이 기대됩니다.`,
+      health: `위장·소화 기능에 신경 쓰세요. <strong>규칙적인 식사와 황색 식품</strong>이 도움이 됩니다.`,
+    },
+    금: {
+      love: `금(金)의 기운이 강한 ${gStr}은 원칙적이고 의리 있는 연애를 합니다. 감정 표현이 서툴 수 있으나 <strong>한번 맺은 인연은 끝까지</strong> 지키는 스타일입니다.`,
+      money: `분석력으로 투자 타이밍을 잘 잡습니다. <strong>금융·법조·기술 분야</strong>에서 높은 수익을 올릴 수 있습니다. 가을이 재물의 최적 시기입니다.`,
+      career: `원칙과 정밀함이 강점입니다. <strong>법조·회계·공학·군경</strong> 분야에서 뛰어난 역량을 발휘합니다.`,
+      health: `폐·대장·피부 관리에 유의하세요. <strong>규칙적인 운동과 백색 식품</strong>을 가까이 하세요.`,
+    },
+    수: {
+      love: `수(水)의 기운이 강한 ${gStr}은 유연하고 적응력 있는 연애를 합니다. 상대의 감정을 잘 읽으며 <strong>지적인 교감</strong>을 중시합니다. 겨울에 인연이 깊어집니다.`,
+      money: `유연한 사고로 다양한 수익원을 만듭니다. <strong>무역·IT·미디어·컨설팅</strong>에서 재물 운이 강합니다. 겨울이 재물 활동의 최성기입니다.`,
+      career: `적응력과 통찰력이 강점입니다. <strong>외교·무역·미디어·연구</strong> 분야에서 독보적인 능력을 발휘합니다.`,
+      health: `신장·방광·생식기 건강에 유의하세요. <strong>충분한 수분 섭취와 검은색 식품</strong>이 도움됩니다.`,
+    },
+  };
+
+  return fortuneDB[dominant] || fortuneDB['토'];
+}
+
+function getLuckyInfo(dayGanIdx, dayJiIdx, ohaengCount) {
+  const dominant = Object.entries(ohaengCount).sort((a,b)=>b[1]-a[1])[0][0];
+  const luckyNums = {
+    목: [3,4,8,9,13,14],
+    화: [2,7,12,17,22,27],
+    토: [5,10,15,20,25,30],
+    금: [4,9,14,19,24,29],
+    수: [1,6,11,16,21,26],
+  };
+  const luckyColors = {
+    목: '녹색·청색', 화: '적색·주황', 토: '황색·갈색', 금: '흰색·은색', 수: '검정·진청',
+  };
+  const luckyDir = {
+    목: '동쪽', 화: '남쪽', 토: '중앙', 금: '서쪽', 수: '북쪽',
+  };
+  const luckyDays = {
+    목: '목요일', 화: '화요일', 토: '토요일', 금: '금요일', 수: '수요일',
+  };
+
+  return {
+    numbers: luckyNums[dominant] || [7,14,21,28,35,42],
+    color: luckyColors[dominant] || '흰색',
+    direction: luckyDir[dominant] || '중앙',
+    day: luckyDays[dominant] || '토요일',
+    season: { 목:'봄(3~5월)', 화:'여름(6~8월)', 토:'환절기', 금:'가을(9~11월)', 수:'겨울(12~2월)' }[dominant] || '봄',
+  };
+}
+
+// ============================================================
+// 로또 번호 생성
+// ============================================================
+function seededRandom(seed) {
+  let s = seed;
+  return function() {
+    s = (s * 1664525 + 1013904223) >>> 0;
+    return s / 4294967296;
+  };
+}
+
+function pickUnique(rng, count, min, max) {
+  const pool = [];
+  for (let i = min; i <= max; i++) pool.push(i);
+  for (let i = pool.length - 1; i > 0; i--) {
+    const j = Math.floor(rng() * (i + 1));
+    [pool[i], pool[j]] = [pool[j], pool[i]];
+  }
+  return pool.slice(0, count).sort((a, b) => a - b);
+}
+
+function textToHash(text) {
+  let hash = 5381;
+  for (let i = 0; i < text.length; i++) {
+    hash = ((hash << 5) + hash + text.charCodeAt(i)) >>> 0;
+  }
+  return hash;
+}
+
+function generateLottoSets(pillars, ohaengCount, context, lucky) {
+  const now = new Date();
+  const baseTime = now.getFullYear() * 10000 + (now.getMonth()+1) * 100 + now.getDate();
+  const ctxHash = textToHash(context || 'cosmic');
+
+  const dayGanIdx = pillars.day ? pillars.day.ganIdx : 0;
+  const dayJiIdx  = pillars.day ? pillars.day.jiIdx  : 0;
+  const pillarSeed = dayGanIdx * 1000 + dayJiIdx * 100 + (pillars.year?.ganIdx || 0);
+
+  // 세트 1: 오행 기반 + 시간
+  const rng1 = seededRandom(pillarSeed + baseTime);
+  const set1 = pickUnique(rng1, 6, 1, 45);
+  const bonus1 = pickUnique(seededRandom(pillarSeed + baseTime + 777), 1, 1, 45)
+    .filter(n => !set1.includes(n))[0] || 7;
+
+  // 세트 2: 행운 숫자 + 서사
+  const luckyBase = lucky.numbers.reduce((a,b)=>a+b, 0);
+  const rng2 = seededRandom(luckyBase * 111 + ctxHash);
+  const set2 = pickUnique(rng2, 6, 1, 45);
+  const bonus2 = pickUnique(seededRandom(luckyBase + ctxHash + 999), 1, 1, 45)
+    .filter(n => !set2.includes(n))[0] || 13;
+
+  // 세트 3: 연주+월주 혼합
+  const yearJiIdx = pillars.year?.jiIdx || 0;
+  const monthGanIdx = pillars.month?.ganIdx || 0;
+  const rng3 = seededRandom((yearJiIdx * 7 + monthGanIdx * 13 + ctxHash) ^ 0xBEEF);
+  const set3 = pickUnique(rng3, 6, 1, 45);
+  const bonus3 = pickUnique(seededRandom(yearJiIdx * 1000 + monthGanIdx), 1, 1, 45)
+    .filter(n => !set3.includes(n))[0] || 21;
+
+  const dominant = Object.entries(ohaengCount).sort((a,b)=>b[1]-a[1])[0][0];
+  const stories = {
+    목: '봄의 생명력이 번호를 깨웠습니다. 새싹이 땅을 뚫고 나오듯, 이 숫자들이 스스로 떠올랐습니다.',
+    화: '열정의 불꽃이 번호를 선택했습니다. 정오의 태양처럼 이 숫자들이 가장 강렬하게 빛납니다.',
+    토: '대지의 두터운 신뢰가 번호를 품었습니다. 묵직한 땅의 기운이 이 숫자들을 지지합니다.',
+    금: '서리 같은 결단력이 번호를 골랐습니다. 날카로운 쇠의 기운이 이 숫자들을 정제했습니다.',
+    수: '깊은 물의 지혜가 번호를 흘려보냈습니다. 강물처럼 자연스럽게 이 숫자들이 흘러왔습니다.',
+  };
+
+  return [
+    { label:'오행 원국형', balls:set1, bonus:bonus1, ballClass:'b1',
+      story:`${pillars.day?.gan || ''}${pillars.day?.ji || ''} 일주의 기운과 오늘의 시간 파동이 결합하여 이 번호들을 선택했습니다.` },
+    { label:'행운 서사형', balls:set2, bonus:bonus2, ballClass:'b2',
+      story:stories[dominant] || stories['토'] },
+    { label:'연월주 융합형', balls:set3, bonus:bonus3, ballClass:'b3',
+      story:`연주 ${pillars.year?.gan || ''}${pillars.year?.ji || ''}과 월주 ${pillars.month?.gan || ''}${pillars.month?.ji || ''}의 천간·지지 에너지가 교차하며 이 번호들이 공명했습니다.` },
+  ];
+}
+
+// ============================================================
+// UI 렌더링
+// ============================================================
+let currentData = null;
+
+function renderResult(data) {
+  const { pillars, ohaengCount, fortune, lucky, ilju, name } = data;
+
+  // 오행 최대값
+  const maxOhaeng = Math.max(...Object.values(ohaengCount));
+
+  // 십성 계산 (일간 기준)
+  const ilganIdx = pillars.day?.ganIdx ?? 0;
+  const sipseongList = [
+    { pos:'연간', ...pillars.year, type: pillars.year ? getSipseong(ilganIdx, pillars.year.ganIdx) : '-' },
+    { pos:'연지', isJi: true, ...pillars.year },
+    { pos:'월간', ...pillars.month, type: pillars.month ? getSipseong(ilganIdx, pillars.month.ganIdx) : '-' },
+    { pos:'월지', isJi: true, ...pillars.month },
+  ];
+
+  const html = `
+  <div class="result-reveal">
+    <div class="section-card">
+      <div class="section-title"><span class="title-mark"></span> ${name} 님의 사주 원국</div>
+      <div class="saju-pillars">
+        ${['year','month','day','hour'].map((p, i) => {
+          const pl = pillars[p];
+          const labels = ['연주 (年柱)','월주 (月柱)','일주 (日柱)','시주 (時柱)'];
+          if (!pl) return `<div class="pillar"><div class="pillar-label">${labels[i]}</div><span class="pillar-char" style="color:var(--ink3); font-size:18px">미입력</span></div>`;
+          return `<div class="pillar">
+            <div class="pillar-label">${labels[i]}</div>
+            <span class="pillar-char gan">${pl.gan}</span>
+            <span class="pillar-char ji">${pl.ji}</span>
+            <div class="pillar-sub">${pl.ganKo}${pl.jiKo} · ${SIPIJINSU[pl.jiIdx]}</div>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>
+
+    <div class="section-card">
+      <div class="section-title"><span class="title-mark"></span> 오행 분석</div>
+      <div class="ohaeng-grid">
+        ${Object.entries(ohaengCount).map(([key, val]) => {
+          const c = OHAENG_COLOR[key];
+          const pct = maxOhaeng > 0 ? Math.round((val / maxOhaeng) * 100) : 0;
+          return `<div class="ohaeng-item" style="background:${c.bg}; border-color:${c.border}">
+            <span class="ohaeng-name" style="color:${c.text}">${key}</span>
+            <div class="ohaeng-count" style="color:${c.text}">${val}개 · ${OHAENG_MEANING[key]}</div>
+            <div class="ohaeng-bar-wrap"><div class="ohaeng-bar" style="width:${pct}%; background:${c.bar}"></div></div>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>
+
+    <div class="section-card">
+      <div class="section-title"><span class="title-mark"></span> 일주 분석 — ${ilju.title}</div>
+      <div class="result-section">
+        <h3>성격과 기질</h3>
+        <p class="result-text">${ilju.personality}</p>
+        <div class="result-highlight">
+          <strong>핵심 강점:</strong> ${ilju.strength}<br>
+          <strong>주의할 점:</strong> ${ilju.weakness}<br>
+          <strong>적합 분야:</strong> ${ilju.career}
+        </div>
+      </div>
+    </div>
+
+    <div class="section-card">
+      <div class="section-title"><span class="title-mark"></span> 운세 분석</div>
+      <div class="result-section">
+        <h3>연애 · 결혼운</h3>
+        <p class="result-text">${fortune.love}</p>
+      </div>
+      <div class="result-section">
+        <h3>재물 · 사업운</h3>
+        <p class="result-text">${fortune.money}</p>
+      </div>
+      <div class="result-section">
+        <h3>직업 · 진로운</h3>
+        <p class="result-text">${fortune.career}</p>
+      </div>
+      <div class="result-section">
+        <h3>건강운</h3>
+        <p class="result-text">${fortune.health}</p>
+      </div>
+    </div>
+
+    <div class="section-card">
+      <div class="section-title"><span class="title-mark"></span> 행운 정보</div>
+      <div class="lucky-grid">
+        <div class="lucky-item">
+          <div class="lucky-label">행운의 색</div>
+          <div class="lucky-value">${lucky.color}</div>
+        </div>
+        <div class="lucky-item">
+          <div class="lucky-label">행운의 방향</div>
+          <div class="lucky-value">${lucky.direction}</div>
+        </div>
+        <div class="lucky-item">
+          <div class="lucky-label">행운의 요일</div>
+          <div class="lucky-value">${lucky.day}</div>
+        </div>
+        <div class="lucky-item">
+          <div class="lucky-label">행운의 계절</div>
+          <div class="lucky-value">${lucky.season}</div>
+        </div>
+        <div class="lucky-item" style="grid-column: span 2">
+          <div class="lucky-label">행운의 숫자</div>
+          <div class="lucky-value">${lucky.numbers.join(' · ')}</div>
+        </div>
+      </div>
+    </div>
+  </div>`;
+
+  document.getElementById('resultContent').innerHTML = html;
+}
+
+function renderLotto(data) {
+  const { pillars, ohaengCount, context, lucky } = data;
+  const sets = generateLottoSets(pillars, ohaengCount, context, lucky);
+  const weekday = ['일','월','화','수','목','금','토'][new Date().getDay()];
+  const luckyBuy = `오늘은 ${weekday}요일입니다. 행운의 요일은 <strong style="color:var(--gold)">${lucky.day}</strong>이며,
+    가장 강한 오행 계절은 <strong style="color:var(--gold)">${lucky.season}</strong>입니다.
+    로또는 <strong style="color:var(--gold)">${lucky.direction} 방향</strong>의 판매점에서 구매하면 기운이 더해집니다.`;
+
+  const ballColorClass = { b1:'b1', b2:'b2', b3:'b3' };
+
+  const html = `
+  <div class="result-reveal">
+    <div class="section-card">
+      <div class="section-title"><span class="title-mark"></span> 구매 전략</div>
+      <p class="result-text" style="font-size:13px; line-height:1.9;">${luckyBuy}</p>
+    </div>
+    <div class="section-card">
+      <div class="section-title"><span class="title-mark"></span> 사주 기반 로또 번호 3세트</div>
+      ${sets.map(s => `
+        <div class="lotto-set">
+          <div class="lotto-set-label">${s.label}</div>
+          <div class="lotto-balls">
+            ${s.balls.map(n=>`<div class="lotto-ball ${s.ballClass}">${n}</div>`).join('')}
+            <div style="display:flex;align-items:center;color:var(--ink3);font-size:12px;margin:0 4px">+</div>
+            <div class="lotto-ball bonus" title="보너스">${s.bonus}</div>
+          </div>
+          <div class="lotto-story">${s.story}</div>
+        </div>
+      `).join('')}
+    </div>
+  </div>`;
+
+  document.getElementById('lottoContent').innerHTML = html;
+}
+
+function renderHistory() {
+  const history = getHistory();
+  const container = document.getElementById('historyContent');
+  if (history.length === 0) {
+    container.innerHTML = `<div class="empty-state"><span class="empty-symbol">册</span>저장된 이력이 없습니다.</div>`;
+    return;
+  }
+  container.innerHTML = history.map((h, i) => `
+    <div class="history-item">
+      <div>
+        <div class="history-name">${h.name || '이름 미입력'}</div>
+        <div class="history-meta">${h.birth} · ${h.date}</div>
+      </div>
+      <div class="history-pillars">${h.pillarStr}</div>
+      <button class="history-del" onclick="loadHistory(${i})">불러오기</button>
+      <button class="history-del" onclick="deleteHistory(${i})" style="color:var(--red2)">삭제</button>
+    </div>
+  `).join('');
+}
+
+// ============================================================
+// 로컬 스토리지 이력 관리
+// ============================================================
+function getHistory() {
+  try { return JSON.parse(localStorage.getItem('sajuHistory') || '[]'); }
+  catch(e) { return []; }
+}
+function saveHistory(entry) {
+  const h = getHistory();
+  h.unshift(entry);
+  if (h.length > 30) h.pop();
+  localStorage.setItem('sajuHistory', JSON.stringify(h));
+}
+function deleteHistory(idx) {
+  const h = getHistory();
+  h.splice(idx, 1);
+  localStorage.setItem('sajuHistory', JSON.stringify(h));
+  renderHistory();
+}
+function loadHistory(idx) {
+  const h = getHistory();
+  const entry = h[idx];
+  if (!entry) return;
+  document.getElementById('inp-name').value = entry.name || '';
+  document.getElementById('inp-year').value = entry.year || '';
+  document.getElementById('inp-month').value = entry.month || 1;
+  document.getElementById('inp-day').value = entry.day || 1;
+  document.getElementById('inp-gender').value = entry.gender || 'M';
+  switchTab('input');
+}
+
+// ============================================================
+// 메인 분석 함수
+// ============================================================
+const LOADING_MSGS = [
+  '천간과 지지를 배치하는 중...',
+  '오행의 균형을 측정하는 중...',
+  '일주의 기운을 분석하는 중...',
+  '운세의 실을 엮는 중...',
+  '로또 번호를 우주에서 불러오는 중...',
+];
+
+function analyze() {
+  const name   = document.getElementById('inp-name').value.trim() || '무명';
+  const year   = parseInt(document.getElementById('inp-year').value);
+  const month  = parseInt(document.getElementById('inp-month').value);
+  const day    = parseInt(document.getElementById('inp-day').value);
+  const hour   = parseInt(document.getElementById('inp-hour').value);
+  const gender = document.getElementById('inp-gender').value;
+  const context = document.getElementById('inp-context').value.trim();
+
+  if (!year || year < 1900 || year > 2025) {
+    alert('올바른 출생 연도를 입력해주세요 (1900~2025)');
+    return;
+  }
+
+  // 로딩 표시
+  const overlay = document.getElementById('loadingOverlay');
+  const loadTxt = document.getElementById('loadingText');
+  overlay.classList.add('show');
+  let msgIdx = 0;
+  const msgInterval = setInterval(() => {
+    loadTxt.textContent = LOADING_MSGS[msgIdx++ % LOADING_MSGS.length];
+  }, 600);
+
+  setTimeout(() => {
+    clearInterval(msgInterval);
+    overlay.classList.remove('show');
+
+    try {
+      // 사주 계산
+      const yearPillar  = calcYearPillar(year);
+      const monthPillar = calcMonthPillar(year, month, day);
+      const dayPillar   = calcDayPillar(year, month, day);
+      const hourPillar  = hour >= 0 ? calcHourPillar(dayPillar.ganIdx, hour) : null;
+
+      const pillars = { year: yearPillar, month: monthPillar, day: dayPillar, hour: hourPillar };
+      const ohaengCount = calcOhaeng(Object.values(pillars).filter(Boolean));
+      const fortune = generateFortune(pillars, ohaengCount, gender);
+      const lucky = getLuckyInfo(dayPillar.ganIdx, dayPillar.jiIdx, ohaengCount);
+      const ilju = getIljuMeaning(dayPillar.gan, dayPillar.ji);
+
+      const pillarStr = [yearPillar, monthPillar, dayPillar, hourPillar]
+        .filter(Boolean).map(p => p.gan + p.ji).join(' ');
+
+      currentData = { pillars, ohaengCount, fortune, lucky, ilju, name, context };
+
+      // 렌더링
+      renderResult(currentData);
+      renderLotto(currentData);
+
+      // 이력 저장
+      saveHistory({
+        name, year, month, day, gender, context,
+        birth: `${year}년 ${month}월 ${day}일`,
+        date: new Date().toLocaleDateString('ko-KR'),
+        pillarStr,
+      });
+
+      // 탭 활성화 후 이동
+      document.getElementById('tabResult').classList.add('active');
+      document.getElementById('tabLotto').classList.add('active');
+      switchTab('result');
+    } catch(e) {
+      alert('계산 중 오류가 발생했습니다: ' + e.message);
+    }
+  }, 3200);
+}
+
+// ============================================================
+// 유틸
+// ============================================================
+function switchTab(name) {
+  document.querySelectorAll('.tab-btn').forEach((btn, i) => {
+    const names = ['input','result','lotto','history'];
+    btn.classList.toggle('active', names[i] === name);
+  });
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('panel-' + name).classList.add('active');
+  if (name === 'history') renderHistory();
+}
+
+function fillDays() {
+  const year  = parseInt(document.getElementById('inp-year').value) || 2000;
+  const month = parseInt(document.getElementById('inp-month').value);
+  const max   = new Date(year, month, 0).getDate();
+  const sel   = document.getElementById('inp-day');
+  const cur   = parseInt(sel.value) || 1;
+  sel.innerHTML = '';
+  for (let d = 1; d <= max; d++) {
+    const o = document.createElement('option');
+    o.value = d; o.textContent = d + '일';
+    if (d === Math.min(cur, max)) o.selected = true;
+    sel.appendChild(o);
+  }
+}
+
+document.getElementById('inp-month').addEventListener('change', fillDays);
+document.getElementById('inp-year').addEventListener('change', fillDays);
+fillDays();
+</script>
+</body>
+</html>
